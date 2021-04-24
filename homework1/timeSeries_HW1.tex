@@ -1,0 +1,612 @@
+\documentclass{article}
+
+\usepackage[colorlinks, urlcolor=blue, linkcolor=red, citecolor=green]{hyperref}
+\usepackage{fancyhdr} %设置页眉和页脚的
+\usepackage{extramarks} %设置continue那玩意的
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{tikz} %画线的
+\usepackage[plain]{algorithm}
+\usepackage{algpseudocode}
+\usepackage{enumerate}
+
+\usetikzlibrary{automata,positioning}
+
+%表
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{caption}
+\DeclareCaptionFont{heiti}{\heiti} %还可以定义其他的
+\captionsetup{labelsep=space, font={small, bf}, skip=2pt} %space可以改成quad
+
+%图
+%*****************图片及其相关设置***************************
+\usepackage{graphicx}
+\graphicspath{{tupian/}}
+\usepackage{subfigure}
+% 导入tikz包
+\usepackage{tikz}
+\usetikzlibrary{math}
+
+%*****************代码相关设置***************************
+\usepackage{pythonhighlight}
+%
+% Basic Document Settings
+%
+
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1}
+
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName}
+\chead{\hmwkClass: \hmwkTitle}
+\rhead{\firstxmark}
+\lfoot{\lastxmark}
+\cfoot{\thepage}
+
+\renewcommand\headrulewidth{0.4pt}
+\renewcommand\footrulewidth{0.4pt}
+
+\setlength\parindent{0pt}
+
+%
+% Create Problem Sections
+%
+
+\newcommand{\enterProblemHeader}[1]{
+    \nobreak\extramarks{}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+}
+
+\newcommand{\exitProblemHeader}[1]{
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \stepcounter{#1}
+    \nobreak\extramarks{Problem \arabic{#1}}{}\nobreak{}
+}
+
+\setcounter{secnumdepth}{0}
+\newcounter{partCounter}
+\newcounter{homeworkProblemCounter}
+\setcounter{homeworkProblemCounter}{1}
+\nobreak\extramarks{Problem \arabic{homeworkProblemCounter}}{}\nobreak{}
+
+\newenvironment{homeworkProblem}{
+    \section{Problem \arabic{homeworkProblemCounter}}
+    \setcounter{partCounter}{1}
+    \enterProblemHeader{homeworkProblemCounter}
+}{
+    \exitProblemHeader{homeworkProblemCounter}
+}
+
+%
+% Homework Details
+%   - Title
+%   - Due date
+%   - Class
+%   - Section/Time
+%   - Instructor
+%   - Author
+%
+
+\newcommand{\hmwkTitle}{Homework\ \#1}
+\newcommand{\hmwkDueDate}{March 23, 2021}
+\newcommand{\hmwkClass}{Time Series Analysis}
+\newcommand{\hmwkClassTime}{}
+\newcommand{\hmwkClassInstructor}{Professor Tianwei Yu}
+\newcommand{\hmwkAuthorName}{Peng Deng}
+\newcommand{\hmwkAuthorSchool}{School of Data Science}
+\newcommand{\hmwkAuthorNumber}{Sno.220041042}
+%
+% Title Page
+%
+
+\title{
+    \vspace{2in}
+    \textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+    \normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate}\\
+    \vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+    \vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+
+
+\date{}
+
+\renewcommand{\part}[1]{\textbf{\large Part \Alph{partCounter}}\stepcounter{partCounter}\\}
+
+%
+% Various Helper Commands
+%
+
+% Useful for algorithms
+\newcommand{\alg}[1]{\textsc{\bfseries \footnotesize #1}}
+\usepackage[algo2e,vlined,ruled]{algorithm2e}
+
+% For derivatives
+\newcommand{\deriv}[1]{\frac{\mathrm{d}}{\mathrm{d}x} (#1)}
+
+% For partial derivatives
+\newcommand{\pderiv}[2]{\frac{\partial}{\partial #1} (#2)}
+
+% Integral dx
+\newcommand{\dx}{\mathrm{d}x}
+
+% Alias for the Solution section header
+\newcommand{\solution}{\textbf{\large Solution}}
+
+% Probability commands: Expectation, Variance, Covariance, Bias
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Bias}{\mathrm{Bias}}
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+\setcounter{page}{1}
+
+\begin{homeworkProblem}
+    Let $\left\{e_{t}\right\}$ be an independent white noise process. Suppose that the observed process is $Y_{t}=e_{t}+\theta e_{t-1}$ where $\theta$ is either 5 or $1 / 5 .$ Find the autocorrelation function for $\left\{Y_{t}\right\}$ both when $\theta=5$ and when $\theta=1 / 5$
+
+    \vspace{4pt}
+    \textbf{\large{Solution}}
+
+    Because $\left\{e_{t}\right\}$ is an independent white noise process, we suppose $e_{t}\sim $ IWN$\left(0,\sigma^2\right)$. Then we can derive the autocovariance function and autocorrelation function for $\left\{Y_{t}\right\}$ as follow.
+    \begin{equation}
+        \begin{split}
+            \gamma_k &= \operatorname{Cov}\left(Y_t, Y_{t+k}\right)\\
+            &=\operatorname{Cov}\left(e_t+\theta e_{t-1}, e_{t+k}+\theta e_{t+k-1}\right)\\
+            \rho_k&=\frac{\gamma_k}{\sqrt{\operatorname{Var}\left(Y_t\right)}\sqrt{\operatorname{Var}\left(Y_{t+k}\right)}}\\
+            &=\frac{\gamma_k}{\sqrt{\operatorname{Var}\left(e_t+\theta e_{t-1}\right)}\sqrt{\operatorname{Var}\left(e_{t+k}+\theta e_{t+k-1}\right)}}\\
+        \end{split}
+    \end{equation}
+    Then, we can have
+    \begin{equation}
+        \begin{split}
+            \gamma_k&=
+            \begin{cases}
+                \left(1+\theta^2\right)\sigma^2&\left(k=0\right)\\
+                \theta\sigma^2&\left(k=1\right)\\
+                0&\left(k>1\right)\\
+            \end{cases}\\
+            \rho_k&=
+            \begin{cases}
+                1&\left(k=0\right)\\
+                \frac{\theta}{1+\theta^2}& \left(k=1\right)\\
+                0&\left(k>1\right)
+            \end{cases}
+        \end{split}
+    \end{equation}
+    Thus, when $\theta=5$ or $\theta=1/5$, their acf are the same. We can have
+    \begin{equation}
+        \begin{split}
+            \rho_k&=
+            \begin{cases}
+                1&\left(k=0\right)\\
+                \frac{5}{26}& \left(k=1\right)\\
+                0&\left(k>1\right)
+            \end{cases}
+        \end{split}
+    \end{equation}
+\end{homeworkProblem}
+
+\begin{homeworkProblem}
+    Suppose $Y_{t}=4+3 t+X_{t}$ where $\left\{X_{t}\right\}$ is a zero mean stationary series with autocovariance function $\gamma_{k}$.
+    \begin{enumerate}[(a)]
+        \item Find the mean function of $\left\{Y_{t}\right\}$.
+        \item Find the autocovariance function for $\left\{Y_{t}\right\}$.
+        \item Is $\left\{Y_{t}\right\}$ stationary?(Why or why not?)
+    \end{enumerate}
+
+    \vspace{4pt}
+    \textbf{\large{Solution}}
+
+    \vspace{4pt}
+    \textbf{Subproblem(a)}
+
+    We can find the mean of $\left(Y_t\right)$ as follow
+    \begin{equation}
+        \begin{split}
+            \operatorname{E}\left(Y_t\right)&=4+3t+\operatorname{E}\left(X_t\right)\\
+            &=4+3t
+        \end{split}
+    \end{equation}
+    \vspace{4pt}
+    \textbf{Subproblem(b)}
+
+    We can find the autocovariance function of $\left(Y_t\right)$ as follow. We denote the autocovariance function of $\left(Y_t\right)$ as $\Gamma_k$.
+    \begin{equation}
+        \begin{split}
+            \Gamma_k &= \operatorname{Cov}\left(Y_t, Y_{t+k}\right)\\
+            &=\operatorname{Cov}\left(4+3t+X_{t}, 4+3\left(t+k\right)+X_{t+k}\right)\\
+            &=\operatorname{Cov}\left(X_t,X_{t+k}\right)\\
+            &=\gamma_k
+        \end{split}
+    \end{equation}
+
+    \vspace{4pt}
+    \textbf{Subproblem(c)}
+
+    $\left\{Y_{t}\right\}$ is not stationary, because the mean of $\left\{Y_{t}\right\}$ is $4+3t$, which depends on $t$.
+
+\end{homeworkProblem}  
+
+\begin{homeworkProblem}
+    Suppose that $\left\{Y_{t}\right\}$ is stationary with autocovariance function $\gamma_{k}$.
+    \begin{enumerate}[(a)]
+        \item Show that $W_{t}=\nabla Y_{t}=Y_{t}-Y_{t-1}$ is stationary by finding the mean and autocovariance function for $\left\{W_{t}\right\}$.
+        \item Show that $U_{t}=\nabla \nabla Y_{t}=\nabla\left[Y_{t}-Y_{t-1}\right]=Y_{t}-2 Y_{t-1}+Y_{t-2}$ is stationary.
+    \end{enumerate}
+
+    \vspace{4pt}
+    \textbf{\large{Solution}}
+
+    \vspace{4pt}
+    \textbf{Subproblem(a)}
+
+    The mean of $\left\{W_{t}\right\}$ is as follow
+    \begin{equation}
+        \label{eq6}
+        \begin{split}
+            \operatorname{E}\left(W_t\right) &= \operatorname{E}\left(Y_t-Y_{t-1}\right)\\
+            &=\operatorname{E}\left(Y_t\right) - \operatorname{E}\left(Y_{t-1}\right)\\
+            &=0
+        \end{split}
+    \end{equation}
+    The autocovariance of $\left\{W_{t}\right\}$ is as follow, we deonte the autocovariance of $\left\{W_{t}\right\}$ as $\Gamma_k$
+    \begin{equation}
+        \label{eq7}
+        \begin{split}
+            \Gamma_k&=\operatorname{Cov}\left(W_t,W_{t+k}\right)\\
+            &= \operatorname{Cov}\left(Y_t-Y_{t-1}, Y_{t+k}-Y_{t+k-1}\right)\\
+            &=
+            \begin{cases}
+                2\gamma_0-2\gamma_1&k=0\\
+                -\gamma_{k-1}+2\gamma_{k}-\gamma_{k+1}&k\ge1\\
+            \end{cases}
+        \end{split}
+    \end{equation}
+    According to equation \ref{eq6} and equation \ref{eq7}, we can find that the mean of $\left\{W_{t}\right\}$ is 0 which does not depend on $t$. Besides, the covariance of $\left\{W_{t}\right\}$, say $\Gamma_k$ exists, is finite and depends only on $k$ but not on $t$. 
+    Thus, we can find $\left\{W_{t}\right\}$ is stationary.
+
+    \vspace{4pt}
+    \textbf{Subproblem(b)}
+
+    The mean of $\left\{U_{t}\right\}$ is as follow
+    \begin{equation}
+        \label{eq8}
+        \begin{split}
+            \operatorname{E}\left(U_t\right) &= \operatorname{E}\left(Y_t-2Y_{t-1}+Y_{t-2}\right)\\
+            &=\operatorname{E}\left(Y_t\right) - 2\cdot\operatorname{E}\left(Y_{t-1}\right)+\operatorname{E}\left(Y_{t-2}\right)\\
+            &=0
+        \end{split}
+    \end{equation}
+
+    The autocovariance of $\left\{U_{t}\right\}$ is as follow, we deonte the autocovariance of $\left\{U_{t}\right\}$ as $\Gamma_k$
+    \begin{equation}
+        \label{eq9}
+        \begin{split}
+            \Gamma_k&=\operatorname{Cov}\left(U_t,U_{t+k}\right)\\
+            &= \operatorname{Cov}\left(Y_t-2Y_{t-1}+Y_{t-2}, Y_{t+k}-2Y_{t+k-1}+Y_{t+k-2}\right)\\
+            &=
+            \begin{cases}
+                6\gamma_0-8\gamma_1+2\gamma_2&k=0\\
+                -4\gamma_0+7\gamma_1-4\gamma_2+\gamma_3&k=1\\
+                \gamma_{k-2}-4\gamma_{k-1}+6\gamma_{k}-4\gamma_{k+1}+\gamma_{k+2}&k\ge2\\
+            \end{cases}
+        \end{split}
+    \end{equation}
+    According to equation \ref{eq8} and equation \ref{eq9}, we can find that the mean of $\left\{U_{t}\right\}$ is 0 which does not depend on $t$. Besides, the covariance of $\left\{U_{t}\right\}$, say $\Gamma_k$ exists, is finite and depends only on $k$ but not on $t$. 
+    Thus, we can find $\left\{U_{t}\right\}$ is stationary.
+\end{homeworkProblem}
+
+\begin{homeworkProblem}
+    Let $\left\{Y_{t}\right\}$ be an $\mathrm{AR}(2)$ process of the special form $Y_{t}=\varphi_{2} Y_{t-2}+e_{t} .$ Find the range of values of $\varphi_{2}$ for which the process is stationary.
+    
+    \vspace{4pt}
+    \textbf{\large{Solution}}
+
+    We can rewrite the form of $Y_t$ as follow
+    \begin{equation}
+        \begin{split}
+            &Y_t = 0\cdot Y_{t-1} + \varphi_2Y_{t-2} + e_t\\
+            \Longrightarrow\quad&\theta_2\left(\boldsymbol{\operatorname{B}}\right)Y_t = \left(1-\varphi_2\boldsymbol{\operatorname{B}}^2\right)Y_t=e_t
+        \end{split}
+    \end{equation}
+    Then we can derive the characteristic equation as follow
+    \begin{equation}
+        \begin{split}
+            &\theta_2\left(\boldsymbol{\operatorname{B}}\right) = 1-\varphi_2\boldsymbol{\operatorname{B}}^2=0\\
+        \end{split}
+    \end{equation}
+    \begin{enumerate}[\quad$\circ$]
+        \item $\varphi_2=0$
+        
+        In this situation, $Y_t=e_t$, which is not an AR(2) process, so $\varphi_2=0$ is not satisfiable.
+        \item $\varphi_2>0$
+        
+        In this situation, by solving the characteristic equation, we have
+        \begin{equation}
+            \begin{split}
+                &\boldsymbol{\operatorname{B}} = \sqrt{\frac{1}{\varphi_2}}\\
+                \Longrightarrow\quad& \left|\boldsymbol{\operatorname{B}}\right| = \sqrt{\frac{1}{\varphi_2}} > 1\\
+                \Longrightarrow\quad& \varphi_2 < 1
+            \end{split}
+        \end{equation}
+        Thus, in this situation, we have $\varphi_2\in\left(0,1\right)$
+        \item $\varphi_2<0$
+        
+        In this situation, by solving the characteristic equation, we have
+        \begin{equation}
+            \begin{split}
+                &\boldsymbol{\operatorname{B}} = \sqrt{\frac{1}{-\varphi_2}}i\\
+                \Longrightarrow\quad& \left|\boldsymbol{\operatorname{B}}\right| = \sqrt{\frac{1}{-\varphi_2}} > 1\\
+                \Longrightarrow\quad& \varphi_2 > -1
+            \end{split}
+        \end{equation}
+        Thus, in this situation, we have $\varphi_2\in\left(-1,0\right)$
+    \end{enumerate}
+    Above all, we find the range of $\varphi_2$ is $\left(-1,0\right)\cup\left(0,1\right)$.
+\end{homeworkProblem}
+
+\begin{homeworkProblem}
+    Suppose that $Y_{t}=A+B t+X_{t}$ where $\left\{X_{t}\right\}$ is a random walk. Suppose that $\mathrm{A}$ and $\mathrm{B}$ are constants.
+    \begin{enumerate}[(a)]
+        \item Is $\left\{Y_{t}\right\}$ stationary?
+        \item Is $\left\{\nabla Y_{t}\right\}$ stationary?
+    \end{enumerate}
+    \pagebreak
+    \vspace{4pt}
+    \textbf{\large{Solution}}
+
+    \vspace{4pt}
+    \textbf{Subproblem(a)}
+
+    Because $\left\{X_t\right\}$ is a random walk, so $X_t = X_{t-1}+w_t=w_1+w_2+\cdots+w_{t}$, where $w_t$ is a white noise series and we assume $w_t\sim \operatorname{WN}\left(0, \sigma^2\right)$. 
+    Then we can derive the mean of $\left\{Y_t\right\}$ as follow
+    \begin{equation}
+        \begin{split}
+            \operatorname{E}\left(Y_t\right) &=\operatorname{E}\left(A+Bt+X_t\right)\\
+            &=\operatorname{E}\left(A+Bt+w_1+w_2+\cdots+w_t\right)\\
+            &=\operatorname{E}\left(A+Bt\right) + \operatorname{E}\left(w_1+w_2+\cdots+w_t\right)\\
+            &=A+Bt
+        \end{split}
+    \end{equation}
+    Thus, we can derive that $\left\{Y_{t}\right\}$ is not stationary, because the mean of $\left\{Y_{t}\right\}$ is $A+Bt$, which depends on $t$.
+
+    \vspace{4pt}
+    \textbf{Subproblem(b)}
+
+    We can rewrite the form of $\left\{\nabla Y_t\right\}$ as follow
+    \begin{equation}
+        \begin{split}
+            \nabla Y_t &= Y_t - Y_{t-1}\\
+            &=A+Bt+X_t - \left(A+B\left(t-1\right)+X_{t-1}\right)\\
+            &=B+X_t-X_{t-1}\\
+            &=B+w_t
+        \end{split}
+    \end{equation}
+    Then, we can derive the mean of $\left\{\nabla Y_t\right\}$ as follow
+    \begin{equation}
+        \begin{split}
+            \operatorname{E}\left(\nabla Y_t\right)& = \operatorname{E}\left(B+w_t\right)\\
+            &=B 
+        \end{split}
+    \end{equation}
+    The variance of $\left\{\nabla Y_t\right\}$ is as follow
+    \begin{equation}
+        \begin{split}
+            \operatorname{Var}\left(\nabla Y_t\right)&=\operatorname{Var}\left(B+w_t\right)\\
+            &=\operatorname{Var}\left(w_t\right)\\
+            &=\sigma^2
+        \end{split}
+    \end{equation}
+    The autocovariance of $\left\{\nabla Y_t\right\}$ is as follow (for $ k > 0$).
+    \begin{equation}
+        \begin{split}
+            \operatorname{Cov}\left(\nabla Y_t, \nabla Y_{t-k}\right)&=\operatorname{Cov}\left(B+w_t, B+w_{t-k}\right)\\
+            &=\operatorname{Cov}\left(w_t, w_{t-k}\right)\\
+            &=0
+        \end{split}
+    \end{equation}
+    Above all, we can derive that $\left\{\nabla Y_t\right\}$ is stationary.
+\end{homeworkProblem}
+
+\begin{homeworkProblem}
+    For a random walk with random starting value, let $Y_{t}=Y_{0}+e_{t}+e_{t-1}+\cdots +e_{1}$ for $t>0$, where $Y_{0}$ has a distribution with mean $\mu_{0}$ and variance $\sigma_{0}^{2} .$ Suppose futher that $Y_{0}, e_{1}, \cdots, e_{t}$ are independent, $e_{t} \sim I W N\left(0, \sigma_{e}^{2}\right)$
+    \begin{enumerate}[(a)]
+        \item Show that $E\left(Y_{t}\right)=\mu_{0}$ for all $t$.
+        \item Show that $\operatorname{Var}\left(Y_{t}\right)=t \sigma_{e}^{2}+\sigma_{0}^{2}$.
+        \item Show that $\operatorname{Cov}\left(Y_{t}, Y_{s}\right)=\min (t, s) \sigma_{e}^{2}+\sigma_{0}^{2}$
+        \item Show that $\operatorname{Corr}\left(Y_{t}, Y_{s}\right)=\sqrt{\frac{t \sigma_{e}^{2}+\sigma_{0}^{2}}{s \sigma_{e}^{2}+\sigma_{0}^{2}}},$ for $0 \leq t \leq s$.
+    \end{enumerate}
+
+    \vspace{4pt}
+    \textbf{\large{Solution}}
+
+    \vspace{4pt}
+    \textbf{Subproblem(a)}
+
+    We can derive $\operatorname{E}\left(Y_t\right)$ as follow
+    \begin{enumerate}[\quad $\circ$]
+        \item For $t=0$
+        
+        \begin{equation}
+            \begin{split}
+                \operatorname{E}\left(Y_t\right) &= \operatorname{E}\left(Y_0\right)=\mu_0
+            \end{split}
+        \end{equation}
+        \item For $t>0$
+        
+        \begin{equation}
+            \begin{split}
+                \operatorname{E}\left(Y_t\right) &= \operatorname{E}\left(Y_{0}+e_{t}+e_{t-1}+\cdots +e_{1}\right)\\
+                &=\operatorname{E}\left(Y_0\right)+\operatorname{E}\left(e_t\right)+\operatorname{E}\left(e_{t-1}\right)+\cdots+\operatorname{E}\left(e_1\right)\\
+                &=\mu_0
+            \end{split}
+        \end{equation}
+    \end{enumerate}
+    Thus, we have showed that $\operatorname{E}\left(Y_t\right) = \mu_0$ for all $t$.
+
+    \vspace{4pt}
+    \textbf{Subproblem(b)}
+
+    \begin{enumerate}[\quad $\circ$]
+        \item For $t=0$
+        
+        \begin{equation}
+            \begin{split}
+                \operatorname{Var}\left(Y_t\right) &= \operatorname{Var}\left(Y_0\right)=\sigma_0^2\\
+                &=0\cdot \sigma_e^2+\sigma_0^2=t\sigma_e^2+\sigma_0^2
+            \end{split}
+        \end{equation}
+
+        \item For $t>0$
+        
+        \begin{equation}
+            \begin{split}
+                \operatorname{Var}\left(Y_t\right) &= \operatorname{Var}\left(Y_{0}+e_{t}+e_{t-1}+\cdots +e_{1}\right)\\
+                &=\operatorname{Var}\left(Y_0\right)+\operatorname{Var}\left(e_t\right)+\operatorname{Var}\left(e_{t-1}\right)+\cdots+\operatorname{Var}\left(e_1\right)\\
+                &=\sigma_0^2+t\sigma_e^2
+            \end{split}
+        \end{equation}
+    \end{enumerate}
+    Thus, we have showed that $\operatorname{Var}\left(Y_t\right) = t\sigma_e^2+\sigma_0^2$ for all $t$.
+
+    \vspace{4pt}
+    \textbf{Subproblem(c)}
+
+    Suppose $t \le s$
+    \begin{equation}
+        \begin{split}
+            \operatorname{Cov}\left(Y_t, Y_s\right) &= \operatorname{Cov}\left(Y_{0}+e_{t}+e_{t-1}+\cdots +e_{1}, Y_{0}+e_{s}+e_{s-1}+\cdots +e_{1}\right)\\
+            &=\operatorname{Cov}\left(Y_{0}+e_{t}+e_{t-1}+\cdots +e_{1}, Y_{0}+e_{s}+e_{s-1}+\cdots+e_{t}+\cdots +e_{1}\right)\\
+            &=\operatorname{Cov}\left(Y_0\right)+\sum_{i=1}^{t}\sigma_e^2\\
+            &=\sigma_0^2+t\sigma_e^2=\operatorname{min}\left(s,t\right)\sigma_e^2+\sigma_0^2
+        \end{split}
+    \end{equation}
+
+    \vspace{4pt}
+    \textbf{Subproblem(d)}
+
+    \begin{equation}
+        \begin{split}
+            \operatorname{Corr}\left(Y_t, Y_s\right) &=\frac{\operatorname{Cov}\left(Y_t, Y_s\right)}{\sqrt{\operatorname{Var}\left(Y_t\right)}\cdot \sqrt{\operatorname{Var}\left(Y_s\right)}}\\
+            &=\frac{t\sigma_e^2+\sigma_0^2}{\sqrt{t\sigma_e^2+\sigma_0^2}\cdot \sqrt{s\sigma_e^2+\sigma_0^2}}\\
+            &=\sqrt{\frac{t\sigma_e^2+\sigma_0^2}{s\sigma_e^2+\sigma_0^2}}
+        \end{split}
+    \end{equation}
+\end{homeworkProblem}
+
+\begin{homeworkProblem}
+    Suppose that $\left\{Y_{t}\right\}$ is an $A R(1)$ process with $-1<\phi<+1 . \quad Y_{t}=\phi Y_{t-1}+e_{t},$ $e_{t} \sim I W N\left(0, \sigma_{e}^{2}\right)$
+    \begin{enumerate}[(a)]
+        \item Show that $\operatorname{Var}\left(W_{t}\right)=2 \sigma_{e}^{2} /(1+\phi)$.
+        \item Find the autocovariance function for $W_{t}=\nabla Y_{t}=Y_{t}-Y_{t-1}$ in terms of $\phi$ and $\sigma_{e}^{2}$.
+    \end{enumerate}
+
+    \vspace{4pt}
+    \textbf{\large{Solution}}
+
+    \vspace{4pt}
+    \textbf{Subproblem(a)}
+
+    Firstly, we rewrite the form of $\left\{Y_t\right\}$ as follow
+    \begin{equation}
+        \begin{split}
+            &Y_t = \phi Y_{t-1} + e_t\\
+            \Longrightarrow\quad&\left(1-\phi\boldsymbol{\operatorname{B}}\right)Y_t = e_t\\
+            \Longrightarrow\quad&Y_t = \left(1-\phi\boldsymbol{\operatorname{B}}\right)^{-1}e_t\\
+            &\quad=\left(1+\phi \boldsymbol{\operatorname{B}}+\phi^2 \boldsymbol{\operatorname{B}}^2+\phi^3 \boldsymbol{\operatorname{B}}^3+\cdots\right)e_t\\
+            &\quad=e_t+\phi e_{t-1}+\phi^2 e_{t-2}+\cdots\\
+            &\quad=\sum_{i=0}^{\infty}\phi^ie_{t-i}
+        \end{split}
+    \end{equation}
+    Then, we can derive the varaince of $\left\{Y_t\right\}$ as follow
+    \begin{equation}
+        \begin{split}
+            \operatorname{Var}\left(Y_t\right) &= \operatorname{Var}\left(\sum_{i=0}^{\infty}\phi^ie_{t-i}\right)\\
+            &=\sum_{i=0}^{\infty}\operatorname{Var}\left(\phi^ie_{t-i}\right)\\
+            &=\sum_{i=0}^{\infty}\left(\phi^2\right)^i\sigma_e^2\\
+            &=\sigma_e^2\sum_{i=0}^{\infty}\left(\phi^2\right)^i\\
+            &=\frac{\sigma_e^2}{1-\phi^2}
+        \end{split}
+    \end{equation}
+    Then, we can derive the autocovariance of $Y_t$ and $Y_{t-k}$ as follow
+    \begin{equation}
+        \begin{split}
+            \operatorname{Cov}\left(Y_t, Y_{t-k}\right) &= \operatorname{Cov}\left(\sum_{i=0}^{\infty}\phi^ie_{t-i}, \sum_{j=0}^{\infty}\phi^je_{t-k-j}\right)\\
+            &=\sum_{i=j+k}\phi^i\phi^j\operatorname{Cov}\left(e_{t-i}, e_{t-k-j}\right)\\
+            &=\phi\sum_{j=0}^{\infty}\left(\phi^2\right)^j\sigma_e^2\\
+            &=\phi^k\sigma_e^2\sum_{j=0}^{\infty}\left(\phi^2\right)^j\\
+            &=\frac{\phi^k\sigma_e^2}{1-\phi^2}
+        \end{split}
+    \end{equation}
+    Thus, we can derive $\operatorname{Var}\left(W_t\right)$ as follow
+    \begin{equation}
+        \begin{split}
+            \operatorname{Var}\left(W_t\right) &= \operatorname{Var}\left(Y_t-Y_{t-1}\right)\\
+            &=\operatorname{Var}\left(Y_t\right) +\operatorname{Var}\left(Y_{t-1}\right) -2\operatorname{Cov}\left(Y_t, Y_{t-1}\right) \\
+            &=2\sigma_e^2\cdot\frac{1}{1-\phi^2}-2\phi\sigma_e^2\cdot\frac{1}{1-\phi^2}\\
+            &=\frac{2\sigma_e^2\left(1-\phi\right)}{1-\phi^2}\\
+            &=\frac{2\sigma_e^2\left(1-\phi\right)}{\left(1+\phi\right)\left(1-\phi\right)}\\
+            &=\frac{2\sigma_e^2}{1+\phi}
+        \end{split}
+    \end{equation}
+
+    \vspace{4pt}
+    \textbf{Subproblem(b)}
+
+    \begin{enumerate}[\quad $\circ$]
+        \item For $k=0$
+        
+        \begin{equation}
+            \begin{split}
+                \gamma_k &= \gamma_0 = \operatorname{Cov}\left(W_t, W_t\right)\\
+                &=\operatorname{Cov}\left(Y_t-Y_{t-1}, Y_t-Y_{t-1}\right)\\
+                &=\operatorname{Cov}\left(Y_t, Y_t\right)-\operatorname{Cov}\left(Y_t, Y_{t-1}\right)-\operatorname{Cov}\left(Y_{t-1}, Y_t\right)+\operatorname{Cov}\left(Y_{t-1}, Y_{t-1}\right)\\
+                &=\frac{\sigma_e^2}{1-\phi^2}-\frac{\phi\sigma_e^2}{1-\phi^2}-\frac{\phi\sigma_e^2}{1-\phi^2}+\frac{\sigma_e^2}{1-\phi^2}\\
+                &=\frac{\sigma_e^2}{1-\phi^2}\cdot\left(2-2\phi\right)
+            \end{split}
+        \end{equation}
+        \item For $k\ge 1$
+        
+        \begin{equation}
+            \begin{split}
+                \gamma_k &=\operatorname{Cov}\left(W_t, W_{t+k}\right)\\
+                &=\operatorname{Cov}\left(Y_t-Y_{t-1}, Y_{t+k}-Y_{t+k-1}\right)\\
+                &=\operatorname{Cov}\left(Y_t, Y_{t+k}\right)-\operatorname{Cov}\left(Y_t, Y_{t+k-1}\right)-\operatorname{Cov}\left(Y_{t-1}, Y_{t+k}\right)+\operatorname{Cov}\left(Y_{t-1}, Y_{t+k-1}\right)\\
+                &=\phi^k\sigma_e^2\cdot\frac{1}{1-\phi^2} - \phi^{k-1}\sigma_e^2\cdot\frac{1}{1-\phi^2}-\phi^{k+1}\sigma_e^2\cdot\frac{1}{1-\phi^2}+\phi^k\sigma_e^2\cdot\frac{1}{1-\phi^2}\\
+                &=\frac{\sigma_e^2}{1-\phi^2}\cdot\left(-\phi^{k-1}+2\phi^{k}-\phi^{k+1}\right)
+            \end{split}
+        \end{equation}
+    \end{enumerate}
+    Above all, we can find the autocovariance function for $W_{t}$ as follow
+    \begingroup
+        \renewcommand*{\arraystretch}{1.5} 
+        \begin{equation}
+            \begin{split}
+                \gamma_k = 
+                \begin{cases}
+                    \frac{\sigma_e^2}{1-\phi^2}\cdot\left(2-2\phi\right)&\left(k=0\right)\\
+                    \\
+                    \frac{\sigma_e^2}{1-\phi^2}\cdot\left(-\phi^{k-1}+2\phi^{k}-\phi^{k+1}\right)&\left(k\ge1\right)
+                \end{cases}
+            \end{split}
+        \end{equation}
+    \endgroup
+\end{homeworkProblem}
+
+\end{document}
+
